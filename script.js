@@ -1,28 +1,47 @@
-//your code here
 
-function startDragging(event) {
-	event.dataTransfer.setData("text" , event.target.id);
+let dragindex = 0;
+let dropindex = 0;
+let clone = "";
+
+const images = document.querySelectorAll(".image");
+
+function drag(e) {
+  e.dataTransfer.setData("text", e.target.id);
 }
 
-function allowDrop(event) {
-	event.preventDefault();
+function allowDrop(e) {
+  e.preventDefault();
 }
 
+function drop(e) {
+  clone = e.target.cloneNode(true);
+  let data = e.dataTransfer.getData("text");
+  let nodelist = document.getElementById("parent").childNodes;
+  console.log(data, e.target.id);
+  for (let i = 0; i < nodelist.length; i++) {
+    if (nodelist[i].id == data) {
+      dragindex = i;
+    }
+  }
 
-function dropped(event) {
-	// console.log(event.target);
-	// The Current container
-	const temp_id = event.target.id;
-	const innerText1 = event.target.innerText;
-	//The replacing container 
-	const data_id = event.dataTransfer.getData("text");
-	const container = document.getElementById(data_id);
-	const innerText2 = container.innerText;
+  dragdrop(clone);
 
-	//Swapping the container according to their id and innerText
-	container.id = temp_id;
-	container.innerText = innerText1;
-	event.target.id = data_id;
-	event.target.innerText = innerText2;
-	
+  document
+    .getElementById("parent")
+    .replaceChild(document.getElementById(data), e.target);
+
+  document
+    .getElementById("parent")
+    .insertBefore(
+      clone,
+      document.getElementById("parent").childNodes[dragindex]
+    );
 }
+
+const dragdrop = (image) => {
+  image.ondragstart = drag;
+  image.ondragover = allowDrop;
+  image.ondrop = drop;
+};
+
+images.forEach(dragdrop);
